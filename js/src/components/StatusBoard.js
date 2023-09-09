@@ -45,7 +45,7 @@ class StatusBoard extends Component {
         </Grid>
         <Grid item xs={2}> 
           <Paper className={classes.paper}>
-            <div className={classes.gaugeLabel}>Ouptut</div>
+            <div className={classes.gaugeLabel}>Output</div>
             <div className={classes.gaugeValue}>{this.props.controllerStatus.output}</div>
           </Paper>
         </Grid>
