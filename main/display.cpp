@@ -80,6 +80,7 @@ void Display::renderProfile(uint16_t left, uint16_t top, uint16_t width, uint16_
 
 void Display::update() {
     char buf[12];
+    int b_cnt;
 
     mDisplay->clear();
     mDisplay->setFont(ArialMT_Plain_10);
@@ -87,14 +88,20 @@ void Display::update() {
     if(mStatus) {
         mDisplay->drawString(0, 0, mStatus);
     }
-    snprintf(buf, sizeof(buf), "Stp %d %ds", mProfileStage, mProfileTime);
+    b_cnt = snprintf(buf, sizeof(buf), "Stp %d %ds", mProfileStage, mProfileTime);
+    if (b_cnt >= sizeof(buf))
+		buf[sizeof(buf)-1] = 0;
     mDisplay->drawString(0, 12, buf);
     mDisplay->drawString(0, 30, "Meas");
     mDisplay->drawString(48, 30, "Targ");
     mDisplay->setFont(ArialMT_Plain_24);
-    snprintf(buf, 5, "%03d", mTempReading);
+    b_cnt = snprintf(buf, 5, "%03d", mTempReading);
+    if (b_cnt >= sizeof(buf))
+		buf[sizeof(buf)-1] = 0;
     mDisplay->drawString(0, TEMP_Y, buf);
-    snprintf(buf, 5, "%03d", mTempTarget);
+    b_cnt = snprintf(buf, 5, "%03d", mTempTarget);
+    if (b_cnt >= sizeof(buf))
+		buf[sizeof(buf)-1] = 0;
     mDisplay->drawString(48, TEMP_Y, buf);
 
     // Draw power bar ticks
