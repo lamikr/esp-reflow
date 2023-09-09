@@ -85,6 +85,7 @@ void WIFI_Initialize()
         .sta = {
             .ssid = CONFIG_WIFI_SSID,
             .password = CONFIG_WIFI_PASSWORD,
+            .threshold.authmode = WIFI_AUTH_WPA2_PSK,
         },
     };
     ESP_LOGI(logtag, "Setting WiFi configuration SSID %s...", wifi_config.sta.ssid);
