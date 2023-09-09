@@ -135,7 +135,7 @@ void app_main() {
       .base_path = "/www",
       .partition_label = "jsclient",
       .max_files = 10,
-      .format_if_mount_failed = false
+      .format_if_mount_failed = true
     };
     ESP_ERROR_CHECK( esp_vfs_spiffs_register(&conf) );
 
