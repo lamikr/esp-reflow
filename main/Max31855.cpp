@@ -1,5 +1,10 @@
 #include "Max31855.h"
 
+int _pin_miso;
+int _pin_clk;
+int _pin_cs;
+spi_host_device_t _spi_host;
+
 Max31855::Max31855(spi_host_device_t spi_host, int clk_pin, int miso_pin, int cs_pin) :
         mSpiHost(spi_host),
         mSpiClkPin(clk_pin),
@@ -7,6 +12,10 @@ Max31855::Max31855(spi_host_device_t spi_host, int clk_pin, int miso_pin, int cs
         mSpiCsPin(cs_pin),
         mSpiDevice(NULL)
 {
+	_spi_host	= spi_host;
+	_pin_clk	= clk_pin;
+	_pin_miso	= miso_pin;
+	_pin_cs		= cs_pin;
 }
 
 void Max31855::connect() {
@@ -14,8 +23,8 @@ void Max31855::connect() {
     spi_device_interface_config_t devcfg;
 
     cfg.mosi_io_num = -1; // Not used
-    cfg.miso_io_num = 19;
-    cfg.sclk_io_num = 18;
+    cfg.miso_io_num = _pin_miso;
+    cfg.sclk_io_num = _pin_clk;
     cfg.quadwp_io_num = -1;
     cfg.quadhd_io_num = -1;
     cfg.max_transfer_sz = 64;
@@ -23,7 +32,7 @@ void Max31855::connect() {
     cfg.intr_flags = 0;
 
     ESP_ERROR_CHECK( spi_bus_initialize(
-        HSPI_HOST,
+        _spi_host,
         &cfg,
         0 // dma chan
     ));
@@ -37,12 +46,12 @@ void Max31855::connect() {
     devcfg.cs_ena_posttrans = 1;
     devcfg.clock_speed_hz = 1000000;
     devcfg.input_delay_ns = 0;
-    devcfg.spics_io_num = 5;
+    devcfg.spics_io_num = _pin_cs;
     devcfg.flags = 0;
     devcfg.queue_size = 1;
     devcfg.pre_cb = NULL;
     devcfg.post_cb = NULL;
-    ESP_ERROR_CHECK( spi_bus_add_device(HSPI_HOST, &devcfg, &mSpiDevice) );
+    ESP_ERROR_CHECK( spi_bus_add_device(_spi_host, &devcfg, &mSpiDevice) );
 }
 
 float Max31855::read() {
