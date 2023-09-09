@@ -45,3 +45,20 @@ I guess this is because the mDNS request is slow, and the proxy must not be cach
 the result. All I know is that setting the target by IP address results in much faster
 requests.
 
+#### new build and flash instructions
+
+With esp-idf 4.4.5 following commands seems to work for flashing:
+(check partitions.csv for partition start parameters for flashing spiffs images)
+
+01) . /opt/esp/esp_idf_v4_4_5/export.sh
+02) git clone --recursive esp-reflow
+03) make menuconfig
+04) set CONFIG_WIFI_SSID and CONFIG_WIFI_PASSWORD parameters in )
+05) make flash
+06) esptool.py --port /dev/ttyUSB0 -b 921600  write_flash 0x210000 build/jsclient.bin
+07) esptool.py --port /dev/ttyUSB0 -b 921600  write_flash 0x310000 build/storage.bin
+08) make flash monitor
+09) check the ip address received after connecting to wifi access point from the console/monitor output
+10) access with browser: http://ip-addr
+
+some additional info also available at: https://jeffmcbride.net/how-to-build-a-reflow-toaster/
