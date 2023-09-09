@@ -10,7 +10,7 @@
 #include "esp_spiffs.h"
 #include "esp_system.h"
 
-#include "Display.h"
+#include "display.h"
 #include "HttpServer.h"
 #include "Max31855.h"
 #include "mdns.h"
