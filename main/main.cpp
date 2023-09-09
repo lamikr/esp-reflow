@@ -125,11 +125,6 @@ void main_loop(Display &display, Max31855 &sensor) {
 }
 
 void app_main() {
-    esp_err_t ret;
-    // const esp_app_desc_t *app_desc;
-    // app_desc = esp_ota_get_app_description();
-
-
     // Mount partition with the front-end code
     esp_vfs_spiffs_conf_t conf = {
       .base_path = "/www",
