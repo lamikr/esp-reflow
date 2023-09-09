@@ -18,17 +18,28 @@
 #include "profile.h"
 #include "wifi.h"
 #include "ReflowLog.h"
+#ifndef NO_DISPLAY_CONNECTED
 #include "SSD1306.h"
+#endif
 #include "Model.h"
 #include "Control.h"
 
-#define SPI_CLK_PIN 18
+  int _thermo_pin_sck = 5;    // P5   GPIO5
+  int _thermo_pin_cs  = 23;   // P23  GPIO23
+  int _thermo_pin_so  = 19;   // P19  GPIO19
+
+#define SPI_CLK_PIN 5
+#define SPI_CS_PIN 23
 #define SPI_MISO_PIN 19
-#define SPI_CS_PIN 5
+
+//#define SPI_CLK_PIN 18
+//#define SPI_CS_PIN 5
+//#define SPI_MISO_PIN 19
 #define PWR_PWM_PIN 17
 
 extern "C" {
 
+#ifdef NO_DISPLAY_CONNECTED
 void stimulus_loop(Display &display) {
     uint16_t tempReading = 0;
     uint16_t tempTarget = 100;
@@ -81,9 +92,13 @@ void sim_loop(Display &display) {
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
+#endif
 
+#ifndef NO_DISPLAY_CONNECTED
 void main_loop(Display &display, Max31855 &sensor) {
-    
+#else
+void main_loop(Max31855 &sensor) {
+#endif
     PowerControl output(PWR_PWM_PIN);
     Control control(&sensor, &output);
     ReflowLog log(500);
@@ -98,28 +113,40 @@ void main_loop(Display &display, Max31855 &sensor) {
         if(control.currentState() != Control::Idle) {
             log.log(control.integrationValue(), sensor.lastReading(), control.targetTemp(), control.output());
         }
+#ifndef NO_DISPLAY_CONNECTED
         display.setTempReading(sensor.lastReading());
         display.setTempTarget(control.targetTemp());
         display.setOutput(control.output());
+#endif
         switch(control.currentState()) {
         case Control::Idle:
+#ifndef NO_DISPLAY_CONNECTED
             display.setStatus("Idle");
             break;
+#endif
         case Control::RunningProfile:
+#ifndef NO_DISPLAY_CONNECTED
             display.setStatus("Running");
             break;
+#endif
         case Control::RunningTempHold:
+#ifndef NO_DISPLAY_CONNECTED
             display.setStatus("TempHold");
             break;
+#endif
         default:
+#ifndef NO_DISPLAY_CONNECTED
             display.setStatus("unknown");
+#endif
             break;
         }
+#ifndef NO_DISPLAY_CONNECTED
         display.setProfile(
             profileManager.getActiveProfile(),
             control.profileStage(),
             control.profileElapsedTime());
         display.update();
+#endif
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
@@ -140,18 +167,23 @@ void app_main() {
     conf.max_files=10;
     conf.format_if_mount_failed = true;
     ESP_ERROR_CHECK( esp_vfs_spiffs_register(&conf) );
-
+#ifndef NO_DISPLAY_CONNECTED
     SSD1306 ssd1306(GPIO_NUM_4, GPIO_NUM_15, GPIO_NUM_16);
     ssd1306.init();
     ssd1306.flipScreenVertically();
     Display display(&ssd1306);
-    Max31855 sensor(HSPI_HOST, SPI_CLK_PIN, SPI_MISO_PIN, SPI_CS_PIN);
+#endif
+    Max31855 sensor(VSPI_HOST, SPI_CLK_PIN, SPI_MISO_PIN, SPI_CS_PIN);
     sensor.connect();
     WIFI_Initialize();
 
     //stimulus_loop(display);
     //sim_loop(display);
+#ifndef NO_DISPLAY_CONNECTED
     main_loop(display, sensor);
+#else
+        main_loop(sensor);
+#endif
 }
 
 }

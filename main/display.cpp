@@ -54,31 +54,39 @@ void Display::renderProfile(uint16_t left, uint16_t top, uint16_t width, uint16_
 
     for(int i=0; i<mProfile.size(); i++) {
         const ProfileStep *p = &mProfile[i];
-        uint16_t start_x = x;
         uint16_t end_x = x + (width * p->duration) / totalTime;
         x = end_x + 1;
+#ifndef NO_DISPLAY_CONNECTED
+        uint16_t start_x = x;
+
         if(p->ramp) {
             mDisplay->drawLine(start_x, TEMP2Y(prevTemp), end_x, TEMP2Y(p->temp));
         } else {
             mDisplay->drawLine(start_x, TEMP2Y(prevTemp), start_x, TEMP2Y(p->temp));
             mDisplay->drawLine(start_x, TEMP2Y(p->temp), end_x, TEMP2Y(p->temp));
         }
+#endif
         prevTemp = p->temp;
 
         if(stageCount == mProfileStage) {
             // This is the active stage
+#ifndef NO_DISPLAY_CONNECTED
             uint16_t xMark = start_x + (mProfileTime * (end_x - start_x)) / p->duration;
             mDisplay->drawLine(xMark, top, xMark, top+height);
+#endif
         }
 
         stageCount++;
     }
+#ifndef NO_DISPLAY_CONNECTED
     mDisplay->drawLine(left, top, left, top+height);
     mDisplay->drawLine(left, top+height, left+width, top+height);
     mDisplay->drawLine(left+width, top, left+width, top+height);
+#endif
 }
 
 void Display::update() {
+#ifndef NO_DISPLAY_CONNECTED
     char buf[12];
     int b_cnt;
 
@@ -120,4 +128,5 @@ void Display::update() {
     renderProfile(63, 0, 58, 28);
     
     mDisplay->display();
+#endif
 }

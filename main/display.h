@@ -1,6 +1,10 @@
 #pragma once
 
+#define NO_DISPLAY_CONNECTED
+
+#ifndef NO_DISPLAY_CONNECTED
 #include "OLEDDisplay.h"
+#endif
 #include "profile.h"
 
 #ifdef __cplusplus
@@ -9,14 +13,16 @@ extern "C" {
 
 class Display {
 public:
-    Display(OLEDDisplay *display) : 
+#ifndef NO_DISPLAY_CONNECTED
+    Display(OLEDDisplay *display) :
         mDisplay(display),
         mProfile(),
         mStatus(NULL)
     { }
+#endif
 
     void setTempReading(uint16_t temp_c);
-    
+
     void setTempTarget(uint16_t temp_c);
 
     void setOutput(uint8_t output);
@@ -27,7 +33,9 @@ public:
 
     void update();
 private:
+#ifndef NO_DISPLAY_CONNECTED
     OLEDDisplay *mDisplay;
+#endif
     Profile mProfile;
     const char *mStatus;
     uint16_t mProfileStage;
