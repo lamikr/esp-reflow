@@ -1,8 +1,1 @@
-{
-  "lead-free": [
-    {"temp": 150, "duration": 60, "ramp": 1},
-    {"temp": 185, "duration": 120, "ramp": 1},
-    {"temp": 245, "duration": 40, "ramp": 0},
-    {"temp": 150, "duration": 60, "ramp": 1},
-  ]
-}
+{"activeProfile":"ep256_lead_225c","profiles":{"ep256_lead_225c":[{"duration":60,"ramp":0,"temp":80},{"duration":60,"ramp":1,"temp":150},{"duration":50,"ramp":1,"temp":185},{"duration":45,"ramp":1,"temp":210},{"duration":10,"ramp":0,"temp":220},{"duration":60,"ramp":1,"temp":150},{"duration":60,"ramp":1,"temp":120},{"duration":60,"ramp":1,"temp":80}],"lead_free_245c":[{"duration":60,"ramp":0,"temp":150},{"duration":120,"ramp":1,"temp":180},{"duration":40,"ramp":0,"temp":245},{"duration":25,"ramp":1,"temp":150}]}}

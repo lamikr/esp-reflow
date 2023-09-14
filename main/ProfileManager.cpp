@@ -11,7 +11,7 @@
 
 static const char *TAG = "ProfileManager"; // Logging tag
 
-ProfileManager::ProfileManager(const char *config_path) : mActiveProfile("empty") {
+ProfileManager::ProfileManager(const char *config_path) : mActiveProfile("ep256_lead_225c") {
   mConfigPath = config_path;
 }
 
@@ -97,6 +97,7 @@ void ProfileManager::readProfiles() {
   struct stat finfo;
   char *buf;
 
+  ESP_LOGW(TAG, "ReadProfiles started: %s", mConfigPath.c_str());
   FILE *f = fopen(mConfigPath.c_str(), "r");
   if(f == NULL) {
     ESP_LOGW(TAG, "Failed to open %s, will use and save default profiles", mConfigPath.c_str());
@@ -177,11 +178,28 @@ void ProfileManager::saveProfiles() {
     return;
   }
   std::string data = jsonWriter.write(root);
+  ESP_LOGW(TAG, "saveProfiles: %s", data.c_str());
   fwrite(&data[0], 1, data.size(), f);
   fclose(f);
 }
 
-static const ProfileStep DEFAULT_PROFILE[] = {
+static const ProfileStep PROFILE_EP256_LEAD_225C[] = {//
+    // {"duration": 60, "temp": 90, , "ramp": 0},
+    // {"duration": 150, "temp": 185, "ramp": 1},
+    // {"duration": 40, "temp": 225, "ramp": 0},
+    // {"duration": 60, "temp": 135, "ramp": 1},
+    {80,	60,		0}, // Preheat 1
+    {150,	60,		1}, // Preheat 2
+    {185,	50,		1}, // Soak
+    {210,	45,		1}, // Reflow 1
+    {220,	10,		0}, // Reflow 2
+    {150,	60,		1}, // Cooldown 1
+    {100,	60,		1}, // Cooldown 2
+    {80,	30,		1}, // Cooldown 3
+    {0,		0,		0}, // Terminator
+};
+
+static const ProfileStep PROFILE_LEAD_FREE_245C[] = {
     {150, 60, 0}, // Preheat
     {180, 120, 1}, // Soak
     {245, 40, 0}, // Reflow
@@ -190,7 +208,9 @@ static const ProfileStep DEFAULT_PROFILE[] = {
 };
 
 void ProfileManager::loadDefaultProfiles() {
-  Profile profile("default", DEFAULT_PROFILE);
-  mProfiles.push_back(profile);
+  Profile profile_ep256_lead_225c("ep256_lead_225c", PROFILE_EP256_LEAD_225C);
+  Profile profile_lead_free("lead_free_245c", PROFILE_LEAD_FREE_245C);
+  mProfiles.push_back(profile_ep256_lead_225c);
+  mProfiles.push_back(profile_lead_free);
 }
 
